@@ -15,5 +15,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to initialize Postgres: %v", err)
 	}
+	redis_client, err := config.InitRedis(cfg)
+	if err != nil {
+		log.Fatal("Failed to initialize Redis: %v", err)
+	}
+	defer redis_client.Close()
 	defer pg_pool.Close()
 }
