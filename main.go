@@ -7,9 +7,13 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("Failed to load config: %v", err)
 	}
-	log.Println("Config: %v", config.POSTGRES_USER)
+	pg_pool, err := config.InitPostgres(cfg)
+	if err != nil {
+		log.Fatal("Failed to initialize Postgres: %v", err)
+	}
+	defer pg_pool.Close()
 }
