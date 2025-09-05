@@ -9,16 +9,17 @@ import (
 func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("Failed to load config: %v", err)
+		log.Fatalf("Failed to load config: %v", err)
 	}
 	pg_pool, err := config.InitPostgres(cfg)
 	if err != nil {
-		log.Fatal("Failed to initialize Postgres: %v", err)
+		log.Fatalf("Failed to initialize Postgres: %v", err)
 	}
 	redis_client, err := config.InitRedis(cfg)
 	if err != nil {
-		log.Fatal("Failed to initialize Redis: %v", err)
+		log.Fatalf("Failed to initialize Redis: %v", err)
 	}
 	defer redis_client.Close()
 	defer pg_pool.Close()
+
 }
