@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -27,18 +28,21 @@ func main() {
 	oauthConfig := config.InitOAuth2(&cfg)
 	googleService := google.NewGoogleService(oauthConfig)
 	sessionStore := sessions.NewCookieStore([]byte(cfg.SESSION_SECRET))
-	authService := auth.NewAuthService(pg_pool, redis_client, oauthConfig)
+	authService := auth.NewAuthService(pg_pool, redis_client, oauthConfig, &cfg)
 	authController := auth.NewAuthController(authService, googleService, sessionStore)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	//Auth routes
-	r.Get("/auth/google/login", authController.GoogleLogin)
-	r.Get("/auth/google/callback", authController.GoogleCallback)
+	// Register routes
+	authController.RegisterRoutes(r)
 
 	defer redis_client.Close()
 	defer pg_pool.Close()
 
+	log.Printf("Server listening on :%s", cfg.SERVER_PORT)
+	if err := http.ListenAndServe(":"+cfg.SERVER_PORT, r); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
 }

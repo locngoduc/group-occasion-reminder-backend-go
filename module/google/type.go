@@ -1,12 +1,12 @@
 package google
 
 type GoogleUser struct {
-	Sub           string `json:"sub"` // Google user ID (unique)
+	ID            string `json:"id"`
 	Email         string `json:"email"`
-	VerifiedEmail bool   `json:"email_verified"` // true if email is verified
+	VerifiedEmail bool   `json:"verified_email"`
 	Name          string `json:"name"`
 	GivenName     string `json:"given_name"`
 	FamilyName    string `json:"family_name"`
-	Picture       string `json:"picture"` // avatar
+	Picture       string `json:"picture"`
 	Locale        string `json:"locale"`
 }
