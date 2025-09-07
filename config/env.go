@@ -31,6 +31,9 @@ type Config struct {
 	// OTP
 	OTP_TTL_MINUTES int `mapstructure:"OTP_TTL_MINUTES"`
 	OTP_LENGTH      int `mapstructure:"OTP_LENGTH"`
+
+	// Session
+	SESSION_SECRET string `mapstructure:"SESSION_SECRET"`
 }
 
 func LoadConfig() (c Config, err error) {

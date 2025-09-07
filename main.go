@@ -3,7 +3,12 @@ package main
 import (
 	"log"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/sessions"
 	"github.com/locngoduc/gor/config"
+	"github.com/locngoduc/gor/module/auth"
+	"github.com/locngoduc/gor/module/google"
 )
 
 func main() {
@@ -19,6 +24,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize Redis: %v", err)
 	}
+	oauthConfig := config.InitOAuth2(&cfg)
+	googleService := google.NewGoogleService(oauthConfig)
+	sessionStore := sessions.NewCookieStore([]byte(cfg.SESSION_SECRET))
+	authService := auth.NewAuthService(pg_pool, redis_client, oauthConfig)
+	authController := auth.NewAuthController(authService, googleService, sessionStore)
+
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	//Auth routes
+	r.Get("/auth/google/login", authController.GoogleLogin)
+	r.Get("/auth/google/callback", authController.GoogleCallback)
+
 	defer redis_client.Close()
 	defer pg_pool.Close()
 
