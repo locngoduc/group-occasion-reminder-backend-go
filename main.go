@@ -10,6 +10,7 @@ import (
 	"github.com/locngoduc/gor/config"
 	"github.com/locngoduc/gor/module/auth"
 	"github.com/locngoduc/gor/module/google"
+	"github.com/locngoduc/gor/module/health"
 )
 
 func main() {
@@ -30,13 +31,14 @@ func main() {
 	sessionStore := sessions.NewCookieStore([]byte(cfg.SESSION_SECRET))
 	authService := auth.NewAuthService(pg_pool, redis_client, oauthConfig, &cfg)
 	authController := auth.NewAuthController(authService, googleService, sessionStore)
-
+	healthController := health.NewHealthController()
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
 	// Register routes
 	authController.RegisterRoutes(r)
+	healthController.RegisterRoutes(r)
 
 	defer redis_client.Close()
 	defer pg_pool.Close()

@@ -72,7 +72,7 @@ CREATE TABLE user_sessions (
   refresh_token_hash TEXT UNIQUE NOT NULL,   -- store hash, not raw token
   access_token_jti TEXT UNIQUE,              -- JWT ID if used
   device_info JSONB,
-  ip_address INET,
+  ip_address TEXT,
   user_agent TEXT,
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
